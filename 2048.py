@@ -19,123 +19,90 @@
 import random
 import copy
 
-board_size = 4
-
-
-# This function will print out the current board in the way we want
-def display():
-    # Find out which value is the largest
-    largest = board[0][0]
-    for row_0 in board:
-        for element in row_0:
-            if element > largest:
-                largest = element
-    # Set the max number of spaces needed to the length of the largest value
-    num_spaces = len(str(largest))
-
-    for row_1 in board:
-        curr_row = "|"
-        for element in row_1:
-            # If the current element is 0, add a space
-            if element == 0:
-                curr_row += " " * num_spaces + "|"
-            # If not, we should add the value
-            else:
-                curr_row += (" " * (num_spaces - len(str(element)))) + str(element) + "|"
-                # if num = odd => make it even to the bigger side like 3->4
-                # just do + 1
-
-                # odd_numbers = list(filter(lambda x: x % 2 == 1, number_list))
-                # ...or just add 2 spaces on two sides since maximum number is 2048
-                # And it won't get any bigger. but if it will... then yes
-        # Print the generated row
-        print(curr_row)
-    print()
+boardSize = 4
 
 
 # This function merges one row left
 def mergeOneRowL(row):
     # Move everything as far to the left as possible
-    for j_mrl in range(board_size - 1):
-        for i_mrl in range(board_size - 1, 0, -1):
+    for j in range(boardSize - 1):
+        for i in range(boardSize - 1, 0, -1):
             # Test if there is an empty space, move over if so
-            if row[i_mrl - 1] == 0:
-                row[i_mrl - 1] = row[i_mrl]
-                row[i_mrl] = 0
-
+            if row[i - 1] == 0:
+                row[i - 1] = row[i]
+                row[i] = 0
     # Merge everything to the left
-    for i_mrl in range(board_size - 1):
-        if row[i_mrl] == row[i_mrl + 1]:
-            row[i_mrl] *= 2
-            row[i_mrl + 1] = 0
-
+    for i in range(boardSize - 1):
+        if row[i] == row[i + 1]:
+            row[i] *= 2
+            row[i + 1] = 0
     # Move everything to the left again
-    for i_mrl in range(board_size - 1, 0, -1):
-        if row[i_mrl - 1] == 0:
-            row[i_mrl - 1] = row[i_mrl]
-            row[i_mrl] = 0
+    for i in range(boardSize - 1, 0, -1):
+        if row[i - 1] == 0:
+            row[i - 1] = row[i]
+            row[i] = 0
     return row
 
 
 # This function merges the whole board to the left
-def merge_left(current_board):
+def merge_left(currentBoard):
     # Merge every row in the board left
-    for ml in range(board_size):
-        current_board[ml] = mergeOneRowL(current_board[ml])
-    return current_board
+    for i in range(boardSize):
+        currentBoard[i] = mergeOneRowL(currentBoard[i])
+    return currentBoard
 
 
 # This function reverses the order of one row
 def reverse(row):
     # Add all elements of the row to a new list, in reverse order
     new = []
-    for ir in range(board_size - 1, -1, -1):
-        new.append((row_2[ir]))
-        return new
+    for i in range(boardSize - 1, -1, -1):
+        new.append(row[i])
+    return new
 
 
 # This function merges the whole board right
-def merge_right(current_board):
+def merge_right(currentBoard):
     # Look at every row in the board
-    for imr in range(board_size):
+    for i in range(boardSize):
         # Reverse the row, merge to the left, then reverse back
-        current_board[imr] = reverse(current_board[imr])
-        current_board[imr] = mergeOneRowL(current_board)
-        current_board[imr] = reverse(current_board[imr])
-    return current_board
+        currentBoard[i] = reverse(currentBoard[i])
+        currentBoard[i] = mergeOneRowL(currentBoard[i])
+        currentBoard[i] = reverse(currentBoard[i])
+    return currentBoard
 
 
 # This function transposes the whole board
-def transpose(current_board):
-    for jtr in range(board_size):
-        for itr in range(jtr, board_size):
-            if not itr == jtr:
-                temp = current_board[jtr][itr]
-                current_board[jtr][itr] = current_board[itr][jtr]
-                current_board[itr][jtr] = temp
-    return current_board
+def transpose(currentBoard):
+    for j in range(boardSize):
+        for i in range(j, boardSize):
+            if not i == j:
+                temp = currentBoard[j][i]
+                currentBoard[j][i] = currentBoard[i][j]
+                currentBoard[i][j] = temp
+    return currentBoard
 
 
 # This function merges the whole board up
-def merge_up(current_board):
+def merge_up(currentBoard):
     # Transposes the whole board, merges it all left, then transposes it back
-    current_board = transpose(current_board)
-    current_board = merge_left(current_board)
-    current_board = transpose(current_board)
-    return current_board
+    currentBoard = transpose(currentBoard)
+    currentBoard = merge_left(currentBoard)
+    currentBoard = transpose(currentBoard)
+    return currentBoard
 
 
 # This function merges the whole board down
-def merge_down(current_board):
+def merge_down(currentBoard):
     # Transposes the whole board, merges it all right, then transposes it back
-    current_board = transpose(current_board)
-    current_board = merge_right(current_board)
-    current_board = transpose(current_board)
-    return current_board
+    currentBoard = transpose(currentBoard)
+    currentBoard = merge_right(currentBoard)
+    currentBoard = transpose(currentBoard)
+    return currentBoard
 
 
 # This function picks a new value for the board
-def pick_new_value():
+def pickNewValue():
     if random.randint(1, 8) == 1:
         return 4
     else:
@@ -143,21 +110,21 @@ def pick_new_value():
 
 
 # This function adds a value to the board in one of the empty spaces
-def add_new_value():
-    row_Num = random.randint(0, board_size - 1)
-    col_Num = random.randint(0, board_size - 1)
+def addNewValue():
+    rowNum = random.randint(0, boardSize - 1)
+    colNum = random.randint(0, boardSize - 1)
     # Pick spots until we find one that is empty
-    while not board[row_Num][col_Num] == 0:
-        row_Num = random.randint(0, board_size - 1)
-        col_Num = random.randint(0, board_size - 1)
+    while not board[rowNum][colNum] == 0:
+        rowNum = random.randint(0, boardSize - 1)
+        colNum = random.randint(0, boardSize - 1)
     # Fill the empty spot with a new value
-    board[row_Num][col_Num] = pick_new_value()
+    board[rowNum][colNum] = pickNewValue()
 
 
-# This function tests if the user has one
+# This function tests if the user has won
 def won():
-    for won_i in board:
-        if 2048 in won_i:
+    for row in board:
+        if 2048 in row:
             return True
         return False
 
@@ -180,25 +147,54 @@ def noMoves():
     return False
 
 
-
-
-# display()
-
+# Create a blank board
 board = []
-for i in range(board_size):
+for i in range(boardSize):
     row = []
-    for j in range(board_size):
+    for j in range(boardSize):
         row.append(0)
     board.append(row)
+
+
+# This function will print out the current board in the way we want
+def display():
+    # Find out which value is the largest
+    largest = board[0][0]
+    for row in board:
+        for element in row:
+            if element > largest:
+                largest = element
+    # Set the max number of spaces needed to the length of the largest value
+    numSpaces = len(str(largest))
+
+    for row in board:
+        currRow = "|"
+        for element in row:
+            # If the current element is 0, add a space
+            if element == 0:
+                currRow += " " * numSpaces + "|"
+            # If not, we should add the value
+            else:
+                currRow += (" " * (numSpaces - len(str(element)))) + str(element) + "|"
+                # if num = odd => make it even to the bigger side like 3->4
+                # just do + 1
+
+                # odd_numbers = list(filter(lambda x: x % 2 == 1, numberlist))
+                # ...or just add 2 spaces on two sides since maximum number is 2048
+                # And it won't get any bigger. but if it will... then yes
+        # Print the generated row
+        print(currRow)
+    print()
+
 
 # Fill two spots with random values, to start the game
 numNeeded = 2
 while numNeeded > 0:
-    rowNum = random.randint(0, board_size - 1)
-    colNum = random.randint(0, board_size - 1)
+    rowNum = random.randint(0, boardSize - 1)
+    colNum = random.randint(0, boardSize - 1)
 
     if board[rowNum][colNum] == 0:
-        board[rowNum][colNum] = pick_new_value()
+        board[rowNum][colNum] = pickNewValue()
         numNeeded -= 1
 
 print("Welcome to 2048! "
@@ -240,6 +236,7 @@ while not gameOver:
         print("Your input was not valid, please try again")
     # Otherwise their input was valid
     else:
+
         # Test if their move was unsuccessful
         if board == tempBoard:
             # Tell them to try again
@@ -252,9 +249,11 @@ while not gameOver:
                 gameOver = True
             else:
                 # Add a new value
-                add_new_value()
+                addNewValue()
+
                 display()
+                
                 # Figure out if they lost
                 if noMoves():
-                    print("Sorry, u have no possible moves, u lose!")
+                    print("Sorry, u have no more possible moves, u lose!")
                     gameOver = True
